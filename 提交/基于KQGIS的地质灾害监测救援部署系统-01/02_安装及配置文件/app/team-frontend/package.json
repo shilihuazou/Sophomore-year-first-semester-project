@@ -1,0 +1,20 @@
+{
+  "name": "jilong-team-portal",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5174 --strictPort",
+    "build": "vite build",
+    "format": "prettier --write \"src/**/*.{js,vue,css}\" \"*.{js,json}\"",
+    "format:check": "prettier --check \"src/**/*.{js,vue,css}\" \"*.{js,json}\""
+  },
+  "dependencies": {
+    "vue": "3.5.43"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "6.0.9",
+    "prettier": "^3.9.9",
+    "vite": "8.3.0"
+  }
+}

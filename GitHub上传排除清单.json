@@ -1,0 +1,34 @@
+{
+  "excluded_directories": [
+    "Gis",
+    "licenses",
+    "backups",
+    "node_modules",
+    ".runtime",
+    "__pycache__",
+    "dist",
+    "原始地图数据",
+    "排版校验目录"
+  ],
+  "excluded_files": [
+    {
+      "path": "app/backend/db.sqlite3",
+      "reason": "数据库、授权凭据、运行产物、安装包或大视频"
+    },
+    {
+      "path": "references/监测登录平台/backend/db.sqlite3",
+      "reason": "数据库、授权凭据、运行产物、安装包或大视频"
+    },
+    {
+      "path": "提交/基于KQGIS的地质灾害救援部署监测平台-02/08_演示视频/基于KQGIS的地质灾害救援部署监测系统作品演示视频.mp4",
+      "reason": "数据库、授权凭据、运行产物、安装包或大视频"
+    },
+    {
+      "path": "提交/基于KQGIS的地质灾害监测救援部署系统-01/04_相关数据/应用演示数据库/db.sqlite3",
+      "reason": "数据库、授权凭据、运行产物、安装包或大视频"
+    }
+  ],
+  "sanitized_text_files": [
+    "references/监测登录平台/backend/backend/settings.py"
+  ]
+}

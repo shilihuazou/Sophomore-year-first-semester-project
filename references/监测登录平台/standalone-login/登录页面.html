@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>洪水监测平台 · 登录</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%232f6bff' d='M12 2 4 7v10l8 5 8-5V7z'/%3E%3Cpath fill='%23fff' d='M12 5l-4.2 2.6v5.2L12 15.4l4.2-2.6V7.6z'/%3E%3C/svg%3E">
+<style>
+/* ===== 基础 ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; }
+body {
+  font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* ===== 页面与背景层 ===== */
+.page {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bg-slideshow { position: absolute; inset: 0; z-index: 0; }
+.bg-slide {
+  position: absolute; inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+/* 背景照片路径只写在 CSS url() 中，JS 仅切换 active 类 */
+.bg-slide.s1 { background-image: url('assets/bg/flood1-farmland.jpg'); }
+.bg-slide.s2 { background-image: url('assets/bg/flood2-storm.jpg'); }
+.bg-slide.s3 { background-image: url('assets/bg/flood3-dam.jpg'); }
+.bg-slide.s4 { background-image: url('assets/bg/flood4-monitor.jpg'); }
+.bg-slide.active { opacity: 1; animation: kenburns 8s ease-out forwards; }
+@keyframes kenburns {
+  from { transform: scale(1); }
+  to   { transform: scale(1.1); }
+}
+.bg-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(160deg, rgba(10,14,32,.55), rgba(10,14,32,.35) 50%, rgba(10,14,32,.65));
+}
+
+/* ===== 卡片通用 ===== */
+.card {
+  position: relative; z-index: 10;
+  width: 380px; max-width: calc(100vw - 48px);
+  padding: 38px 36px 28px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.25);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 16px 48px rgba(0,0,0,.35);
+  color: #fff;
+}
+.card-title { margin: 0 0 6px; font-size: 25px; font-weight: 700; text-align: center; letter-spacing: 2px; }
+.card-subtitle { margin: 0 0 24px; font-size: 13px; text-align: center; color: rgba(255,255,255,.75); }
+.field { display: block; margin-bottom: 16px; }
+.field-label { display: block; margin-bottom: 6px; font-size: 13px; color: rgba(255,255,255,.85); }
+.field input {
+  box-sizing: border-box; width: 100%; height: 44px; padding: 0 14px;
+  border: 1px solid rgba(255,255,255,.35); border-radius: 8px;
+  background: rgba(255,255,255,.12); color: #fff; font-size: 14px; outline: none;
+  transition: border-color .2s, background .2s;
+}
+.field input::placeholder { color: rgba(255,255,255,.45); }
+.field input:focus { border-color: #5aa7ff; background: rgba(255,255,255,.18); }
+.msg {
+  margin: -2px 0 14px; padding: 8px 12px; border-radius: 6px;
+  font-size: 13px; display: none;
+}
+.msg.error { display: block; background: rgba(255,77,79,.22); border: 1px solid rgba(255,77,79,.45); color: #ffd6d6; }
+.msg.success { display: block; background: rgba(82,196,26,.22); border: 1px solid rgba(82,196,26,.5); color: #d9f7be; }
+.btn {
+  width: 100%; height: 46px; border: none; border-radius: 8px;
+  background: linear-gradient(90deg, #2f6bff, #5aa7ff);
+  color: #fff; font-size: 15px; letter-spacing: 6px; cursor: pointer;
+  transition: opacity .2s, transform .1s;
+}
+.btn:hover { opacity: .9; }
+.btn:active { transform: scale(.98); }
+.switch-link { margin: 16px 0 0; font-size: 13px; text-align: center; color: rgba(255,255,255,.75); }
+.switch-link a { color: #7fb2ff; text-decoration: none; cursor: pointer; }
+.switch-link a:hover { text-decoration: underline; }
+.tip { margin: 14px 0 0; font-size: 12px; text-align: center; color: rgba(255,255,255,.55); }
+
+/* ===== 欢迎视图 ===== */
+.welcome {
+  position: relative; z-index: 10;
+  text-align: center; color: #fff;
+  padding: 0 24px;
+}
+.welcome-card {
+  max-width: 520px; margin: 0 auto; padding: 48px 40px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.18);
+}
+.welcome-card h1 { margin: 0 0 14px; font-size: 24px; }
+.welcome-card p { margin: 8px 0; font-size: 14px; opacity: .85; }
+.welcome-card .hint { opacity: .6; font-size: 13px; }
+.welcome-top {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 28px;
+  background: rgba(255,255,255,.06);
+  border-bottom: 1px solid rgba(255,255,255,.12);
+}
+.welcome-top .logo { font-size: 18px; font-weight: 700; letter-spacing: 2px; }
+.welcome-top .user-area { display: flex; align-items: center; gap: 14px; }
+.welcome-top .username { font-size: 14px; opacity: .9; }
+.welcome-top .logout-btn {
+  padding: 6px 14px; border: 1px solid rgba(255,255,255,.4); border-radius: 6px;
+  background: transparent; color: #fff; font-size: 13px; cursor: pointer;
+  transition: background .2s;
+}
+.welcome-top .logout-btn:hover { background: rgba(255,255,255,.15); }
+
+/* ===== 响应式：窄屏 ===== */
+@media (max-width: 480px) {
+  .card { padding: 30px 24px 24px; }
+  .card-title { font-size: 22px; }
+  .welcome-top { padding: 10px 16px; }
+}
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  .field input { font-size: 16px; }
+  .field-label { font-size: 14px; }
+  .card-subtitle, .switch-link, .msg { font-size: 14px; }
+  .welcome-card p { font-size: 15px; }
+}
+</style>
+</head>
+<body>
+<div class="page" id="page">
+  <!-- ===== 轮播背景层 ===== -->
+  <div class="bg-slideshow">
+    <div class="bg-slide s1 active"></div>
+    <div class="bg-slide s2"></div>
+    <div class="bg-slide s3"></div>
+    <div class="bg-slide s4"></div>
+    <div class="bg-overlay"></div>
+  </div>
+
+  <!-- ===== 视图：登录 ===== -->
+  <div class="card" id="view-login">
+    <h1 class="card-title">洪水监测平台</h1>
+    <p class="card-subtitle">欢迎回来，请登录你的账号</p>
+    <form id="login-form">
+      <label class="field">
+        <span class="field-label">用户名</span>
+        <input id="login-username" type="text" placeholder="请输入用户名" autocomplete="username" required>
+      </label>
+      <label class="field">
+        <span class="field-label">密码</span>
+        <input id="login-password" type="password" placeholder="请输入密码" autocomplete="current-password" required>
+      </label>
+      <p class="msg" id="login-msg"></p>
+      <button class="btn" type="submit">登 录</button>
+    </form>
+    <p class="switch-link">还没有账号？<a id="to-register">立即注册</a></p>
+    <p class="tip">演示账号：admin / 123456</p>
+  </div>
+
+  <!-- ===== 视图：注册 ===== -->
+  <div class="card" id="view-register" style="display:none">
+    <h1 class="card-title">注册账号</h1>
+    <p class="card-subtitle">创建账号，加入洪水监测平台</p>
+    <form id="register-form">
+      <label class="field">
+        <span class="field-label">用户名</span>
+        <input id="reg-username" type="text" placeholder="至少 3 个字符" autocomplete="username" required>
+      </label>
+      <label class="field">
+        <span class="field-label">密码</span>
+        <input id="reg-password" type="password" placeholder="至少 6 位" autocomplete="new-password" required>
+      </label>
+      <label class="field">
+        <span class="field-label">确认密码</span>
+        <input id="reg-confirm" type="password" placeholder="再次输入密码" autocomplete="new-password" required>
+      </label>
+      <p class="msg" id="register-msg"></p>
+      <button class="btn" type="submit">注 册</button>
+    </form>
+    <p class="switch-link">已有账号？<a id="to-login">返回登录</a></p>
+  </div>
+
+  <!-- ===== 视图：欢迎 ===== -->
+  <div class="welcome" id="view-welcome" style="display:none">
+    <div class="welcome-top">
+      <span class="logo">洪水监测平台</span>
+      <div class="user-area">
+        <span class="username" id="welcome-username"></span>
+        <button class="logout-btn" id="logout-btn" type="button">退出登录</button>
+      </div>
+    </div>
+    <div class="welcome-card">
+      <h1 id="welcome-title">欢迎回来</h1>
+      <p>登录成功！你现在已经进入了洪水监测平台。</p>
+      <p class="hint">此页面为独立演示版，登录/注册为前端模拟，不连接数据库。</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+ * 独立登录页（演示版）
+ * - 照片轮播：每 6 秒自动切换，无箭头无指示点
+ * - 登录 / 注册：前端模拟（localStorage 保存注册用户）
+ * 如需对接真实 Django 后端，请把演示逻辑替换为 fetch 请求
+ * ============================================================ */
+
+/* ---------- 背景轮播 ---------- */
+var slides = document.querySelectorAll('.bg-slide');
+var current = 0;
+var INTERVAL = 6000;
+
+function nextSlide() {
+  slides[current].classList.remove('active');
+  current = (current + 1) % slides.length;
+  slides[current].classList.add('active');
+}
+setInterval(nextSlide, INTERVAL);
+
+/* ---------- 视图切换 ---------- */
+var viewLogin = document.getElementById('view-login');
+var viewRegister = document.getElementById('view-register');
+var viewWelcome = document.getElementById('view-welcome');
+var page = document.getElementById('page');
+
+function showView(view) {
+  viewLogin.style.display = 'none';
+  viewRegister.style.display = 'none';
+  viewWelcome.style.display = 'none';
+  if (view) view.style.display = '';
+}
+document.getElementById('to-register').addEventListener('click', function () {
+  showView(viewRegister);
+  clearMsg('register-msg');
+});
+document.getElementById('to-login').addEventListener('click', function () {
+  showView(viewLogin);
+  clearMsg('login-msg');
+});
+
+/* ---------- 消息提示 ---------- */
+function showMsg(id, text, type) {
+  var el = document.getElementById(id);
+  el.className = 'msg ' + type;
+  el.textContent = text;
+}
+function clearMsg(id) {
+  var el = document.getElementById(id);
+  el.className = 'msg';
+  el.textContent = '';
+}
+
+/* ---------- 模拟用户库（localStorage 持久化） ---------- */
+var USERS_KEY = 'flood_login_users';
+function getUsers() {
+  try {
+    var raw = localStorage.getItem(USERS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+function saveUsers(users) {
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
+
+/* 内置演示账号 admin/123456 */
+(function () {
+  var users = getUsers();
+  if (!users['admin']) {
+    users['admin'] = '123456';
+    saveUsers(users);
+  }
+})();
+
+/* ---------- 登录 ---------- */
+document.getElementById('login-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var username = document.getElementById('login-username').value.trim();
+  var password = document.getElementById('login-password').value;
+  clearMsg('login-msg');
+
+  if (!username || !password) {
+    showMsg('login-msg', '请输入用户名和密码', 'error');
+    return;
+  }
+  var users = getUsers();
+  if (!users[username]) {
+    showMsg('login-msg', '该用户名不存在，请先注册', 'error');
+    return;
+  }
+  if (users[username] !== password) {
+    showMsg('login-msg', '用户名或密码错误', 'error');
+    return;
+  }
+
+  sessionStorage.setItem('flood_login_user', username);
+  document.getElementById('welcome-username').textContent = username;
+  document.getElementById('welcome-title').textContent = '欢迎回来，' + username;
+  showView(viewWelcome);
+});
+
+/* ---------- 注册 ---------- */
+document.getElementById('register-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var username = document.getElementById('reg-username').value.trim();
+  var password = document.getElementById('reg-password').value;
+  var confirm = document.getElementById('reg-confirm').value;
+  clearMsg('register-msg');
+
+  if (!username || !password || !confirm) {
+    showMsg('register-msg', '请填写完整的注册信息', 'error');
+    return;
+  }
+  if (username.length < 3) {
+    showMsg('register-msg', '用户名至少 3 个字符', 'error');
+    return;
+  }
+  if (password.length < 6) {
+    showMsg('register-msg', '密码至少 6 位', 'error');
+    return;
+  }
+  if (password !== confirm) {
+    showMsg('register-msg', '两次输入的密码不一致', 'error');
+    return;
+  }
+  var users = getUsers();
+  if (users[username]) {
+    showMsg('register-msg', '该用户名已被注册', 'error');
+    return;
+  }
+  users[username] = password;
+  saveUsers(users);
+
+  showMsg('register-msg', '注册成功，请登录', 'success');
+  document.getElementById('reg-username').value = '';
+  document.getElementById('reg-password').value = '';
+  document.getElementById('reg-confirm').value = '';
+  setTimeout(function () {
+    document.getElementById('login-username').value = username;
+    showView(viewLogin);
+    showMsg('login-msg', '注册成功，请登录', 'success');
+  }, 900);
+});
+
+/* ---------- 退出登录 ---------- */
+document.getElementById('logout-btn').addEventListener('click', function () {
+  sessionStorage.removeItem('flood_login_user');
+  document.getElementById('login-password').value = '';
+  clearMsg('login-msg');
+  showView(viewLogin);
+});
+
+/* 已登录状态直接进入欢迎视图 */
+(function () {
+  var user = sessionStorage.getItem('flood_login_user');
+  if (user) {
+    document.getElementById('welcome-username').textContent = user;
+    document.getElementById('welcome-title').textContent = '欢迎回来，' + user;
+    showView(viewWelcome);
+  }
+})();
+</script>
+</body>
+</html>

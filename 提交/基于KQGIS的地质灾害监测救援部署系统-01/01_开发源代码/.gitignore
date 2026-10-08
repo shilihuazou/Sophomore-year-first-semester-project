@@ -1,0 +1,16 @@
+# Runtime and generated files
+app/.runtime/
+app/backend/**/__pycache__/
+app/backend/**/*.py[cod]
+app/backend/media/
+app/backend/db.sqlite3
+app/frontend/node_modules/
+app/frontend/dist/
+app/team-frontend/node_modules/
+app/team-frontend/dist/
+
+# Editor and operating-system files
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store

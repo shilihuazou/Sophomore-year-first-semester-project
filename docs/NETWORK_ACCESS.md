@@ -1,0 +1,67 @@
+# 局域网与公网访问
+
+## 当前网络结构
+
+一键启动后，管理员端监听 `0.0.0.0:5173`，组长端监听 `0.0.0.0:5174`，因此本机和同一局域网内的设备都可以访问。启动脚本会自动识别可用 IPv4 地址并打印完整入口。
+
+Django 后端仍监听 `127.0.0.1:8000`，KQGIS 仍通过本机 `9600` 端口工作。浏览器使用前端的 `/api` 与 `/kqgis` 代理访问它们，所以不要将 8000 和 9600 端口直接映射到公网。
+
+## 局域网访问
+
+1. 双击根目录的 `一键启动全部环境.cmd`。
+2. 在输出中找到 `LAN administrator` 和 `LAN team portal`。
+3. 将相应地址输入同一 Wi-Fi 或同一局域网内的手机、平板或其他电脑。
+
+例如电脑地址是 `192.168.10.138` 时：
+
+- 管理员端：`http://192.168.10.138:5173/#/login`
+- 组长端：`http://192.168.10.138:5174/`
+
+如果其他设备无法连接，应在 Windows 防火墙中允许 Node.js 通过“专用网络”，并确认双方处在同一网段。不要在公共 Wi-Fi 上直接开放演示服务。
+
+## 公网 IP 或域名
+
+编辑 [`../app/network-config.ps1`](../app/network-config.ps1)，把浏览器实际使用的完整来源加入 `PublicOrigins`。来源只能包含协议、主机和可选端口，不能包含页面路径。
+
+直接映射端口的示例：
+
+```powershell
+PublicOrigins = @(
+    'http://203.0.113.10:5173',
+    'http://203.0.113.10:5174'
+)
+```
+
+使用 HTTPS 域名和反向代理的示例：
+
+```powershell
+PublicOrigins = @(
+    'https://admin.example.com',
+    'https://team.example.com'
+)
+```
+
+修改后必须重新启动全部环境。启动器会把这些域名加入 Vite 允许列表、Django `ALLOWED_HOSTS` 与 `CSRF_TRUSTED_ORIGINS`。
+
+也可以在启动前通过环境变量临时追加来源：
+
+```powershell
+$env:APP_PUBLIC_ORIGINS = 'https://admin.example.com,https://team.example.com'
+& '.\一键启动全部环境.cmd'
+```
+
+代码允许外部连接并不等于互联网已经能够到达电脑。使用公网 IP 时仍需在路由器或云安全组中开放并转发 TCP 5173、5174；运营商 CGNAT 环境通常无法直接做入站端口映射，此时应使用云服务器、VPN/组网工具或 HTTPS 隧道。
+
+## 公网部署安全要求
+
+不要以当前演示口令和调试配置直接上线。至少应设置：
+
+```powershell
+$env:DJANGO_SECRET_KEY = '替换为足够长的随机密钥'
+$env:DJANGO_DEBUG = '0'
+$env:DJANGO_COOKIE_SECURE = '1'
+$env:DJANGO_USE_X_FORWARDED_HOST = '1'
+$env:DJANGO_TRUST_PROXY_PROTO = '1'
+```
+
+推荐由 Nginx、Caddy 等反向代理终止 HTTPS，并只向公网开放 80/443。5173、5174 可作为内网源站端口，8000、9600 和数据库文件不应直接暴露。

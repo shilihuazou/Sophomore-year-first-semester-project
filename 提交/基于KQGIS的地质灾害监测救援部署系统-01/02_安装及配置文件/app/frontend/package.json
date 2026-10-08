@@ -1,0 +1,21 @@
+{
+  "name": "jilong-rescue-screen",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "format": "prettier --write \"src/**/*.{js,vue,css}\" \"*.{js,json}\"",
+    "format:check": "prettier --check \"src/**/*.{js,vue,css}\" \"*.{js,json}\""
+  },
+  "dependencies": {
+    "ol": "10.10.0",
+    "vue": "3.5.43"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "6.0.9",
+    "prettier": "^3.6.2",
+    "vite": "8.3.0"
+  }
+}
